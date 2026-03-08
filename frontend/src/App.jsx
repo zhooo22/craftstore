@@ -20,8 +20,7 @@ const StarRating = ({ value, onChange, size = 24 }) => (
 // ============================================================
 const GlobalStyles = () => (
   <style>{`
-    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap');
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Outfit:wght@300;400;500;600&display=swap');    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
       --beige: #F5EFE6; --beige-dark: #EDE3D5; --beige-mid: #D9CFC2;
       --sage: #8A9E85; --sage-light: #B5C5B1; --sage-dark: #5E7259;
@@ -29,9 +28,7 @@ const GlobalStyles = () => (
       --brown: #5C4033; --brown-light: #8B6355; --cream: #FDFAF5;
       --text: #3A2E27; --text-muted: #8B7B72; --border: #D9CFC2;
       --shadow: rgba(58,46,39,0.08); --shadow-md: rgba(58,46,39,0.15);
-      --font-serif: 'Cormorant Garamond', Georgia, serif;
-      --font-sans: 'DM Sans', system-ui, sans-serif;
-      --radius: 4px; --radius-lg: 12px;
+      --font-serif: 'Playfair Display', Georgia, serif;  --font-sans: 'Outfit', system-ui, sans-serif;      --radius: 4px; --radius-lg: 12px;
     }
     html { scroll-behavior: smooth; }
     body { font-family: var(--font-sans); background: var(--cream); color: var(--text); line-height: 1.6; -webkit-font-smoothing: antialiased; }
@@ -58,11 +55,19 @@ const GlobalStyles = () => (
     .badge-orange { background: #FFF3E0; color: #E65100; }
     .badge-blue { background: #E3F2FD; color: #1565C0; }
     ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: var(--beige); } ::-webkit-scrollbar-thumb { background: var(--beige-mid); border-radius: 3px; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeInLeft { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
     @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .fade-in { animation: fadeIn 0.4s ease forwards; }
-    .spinner { width: 28px; height: 28px; border: 3px solid var(--border); border-top-color: var(--terra); border-radius: 50%; animation: spin 0.7s linear infinite; }
+    @keyframes shimmer { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
+    .fade-in { animation: fadeIn 0.5s cubic-bezier(0.22,1,0.36,1) forwards; }
+    .fade-in-left { animation: fadeInLeft 0.5s cubic-bezier(0.22,1,0.36,1) forwards; }
+    .spinner { width: 28px; height: 28px; border: 2px solid var(--border); border-top-color: var(--terra); border-radius: 50%; animation: spin 0.7s linear infinite; }
+    .product-card:hover .product-img { transform: scale(1.04); }
+    .product-img { transition: transform 0.5s cubic-bezier(0.22,1,0.36,1); }
+    .nav-link { position: relative; }
+    .nav-link::after { content:''; position:absolute; bottom:-2px; left:0; width:0; height:1.5px; background:var(--terra); transition: width 0.25s ease; }
+    .nav-link:hover::after, .nav-link.active::after { width:100%; }
   `}</style>
 );
 
@@ -252,18 +257,20 @@ const Navbar = () => {
   }, []);
 
   return (
-    <nav style={{ background: "var(--cream)", borderBottom: "1px solid var(--border)", position: "sticky", top: 0, zIndex: 100, backdropFilter: "blur(8px)" }}>
-      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 20px", height: 66, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <button onClick={() => navigate("home")} style={{ background: "none", border: "none", display: "flex", alignItems: "center", gap: 8 }}>
-          <Icon name="leaf" size={22} color="var(--sage-dark)"/>
-          <span style={{ fontFamily: "var(--font-serif)", fontSize: 22, fontWeight: 500 }}>The Crafted Nest</span>
+    <nav style={{ background: "rgba(253,250,245,0.92)", borderBottom: "1px solid var(--border)", position: "sticky", top: 0, zIndex: 100, backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}>
+      <div style={{ maxWidth: 1240, margin: "0 auto", padding: "0 32px", height: 68, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <button onClick={() => navigate("home")} style={{ background: "none", border: "none", display: "flex", alignItems: "center", gap: 10 }}>
+          <div style={{ width: 32, height: 32, borderRadius: "50%", background: "var(--terra)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <Icon name="leaf" size={16} color="white"/>
+          </div>
+          <span style={{ fontFamily: "var(--font-serif)", fontSize: 20, fontWeight: 500, letterSpacing: "-0.02em" }}>The Crafted Nest</span>
         </button>
-        <div style={{ display: "flex", gap: 28 }}>
+        <div style={{ display: "flex", gap: 36 }}>
           {[["home","Shop"],["about","About"],["contact","Contact"]].map(([p,label]) => (
-            <button key={p} onClick={() => navigate(p)} style={{ background: "none", border: "none", fontSize: 14, color: page===p?"var(--terra)":"var(--text)", fontWeight: page===p?500:400 }}>{label}</button>
+            <button key={p} onClick={() => navigate(p)} className={`nav-link ${page===p?"active":""}`} style={{ background: "none", border: "none", fontSize: 13, color: page===p?"var(--terra)":"var(--text)", fontWeight: 500, letterSpacing: "0.04em", textTransform: "uppercase" }}>{label}</button>
           ))}
           {user?.role === "admin" && (
-            <button onClick={() => navigate("admin")} style={{ background: "none", border: "none", fontSize: 14, color: page==="admin"?"var(--terra)":"var(--text)", fontWeight: page==="admin"?500:400 }}>Admin</button>
+            <button onClick={() => navigate("admin")} className={`nav-link ${page==="admin"?"active":""}`} style={{ background: "none", border: "none", fontSize: 13, color: page==="admin"?"var(--terra)":"var(--text)", fontWeight: 500, letterSpacing: "0.04em", textTransform: "uppercase" }}>Admin</button>
           )}
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
@@ -324,30 +331,41 @@ const HomePage = () => {
 
   return (
     <div style={{ minHeight: "100vh" }}>
-      <div style={{ background: "linear-gradient(135deg, var(--beige) 0%, var(--beige-dark) 100%)", padding: "60px 20px 50px", textAlign: "center", borderBottom: "1px solid var(--border)", position: "relative", overflow: "hidden" }}>
-        <div style={{ position: "absolute", top: 20, right: 60, fontSize: 80, opacity: 0.08 }}>🌿</div>
-        <div style={{ position: "absolute", bottom: 10, left: 60, fontSize: 60, opacity: 0.07 }}>🍃</div>
-        <div style={{ maxWidth: 640, margin: "0 auto", position: "relative" }}>
-          <p style={{ fontSize: 12, letterSpacing: "0.15em", textTransform: "uppercase", color: "var(--sage-dark)", fontWeight: 500, marginBottom: 16 }}>Handmade with Love</p>
-          <h1 style={{ fontSize: "clamp(36px, 6vw, 58px)", marginBottom: 18, fontWeight: 300, fontStyle: "italic" }}>Crafted for the<br/>Mindful Home</h1>
-          <p style={{ fontSize: 16, color: "var(--text-muted)", lineHeight: 1.7, marginBottom: 32 }}>Discover unique handcrafted goods made by artisans who pour their heart into every piece.</p>
-          <div style={{ position: "relative", maxWidth: 440, margin: "0 auto" }}>
-            <input className="input-field" placeholder="Search ceramics, candles, textiles..." value={search} onChange={e => setSearch(e.target.value)}
-              style={{ paddingLeft: 44, height: 48, fontSize: 15, borderRadius: 24, boxShadow: "0 2px 12px var(--shadow)" }} />
-            <div style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}><Icon name="search" size={18} color="var(--text-muted)"/></div>
+      <div style={{ background: "var(--beige)", padding: "80px 32px 64px", borderBottom: "1px solid var(--border)", position: "relative", overflow: "hidden" }}>
+        <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(circle at 20% 50%, rgba(196,113,74,0.06) 0%, transparent 60%), radial-gradient(circle at 80% 20%, rgba(138,158,133,0.08) 0%, transparent 50%)" }}/>
+        <div style={{ maxWidth: 1240, margin: "0 auto", position: "relative", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 60, alignItems: "center" }}>
+          <div className="fade-in-left">
+            <div style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "white", border: "1px solid var(--border)", borderRadius: 100, padding: "6px 14px", marginBottom: 28 }}>
+              <div style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--sage-dark)" }}/>
+              <span style={{ fontSize: 11, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--sage-dark)" }}>Handmade with Love</span>
+            </div>
+            <h1 style={{ fontSize: "clamp(40px, 5vw, 64px)", marginBottom: 20, fontWeight: 400, lineHeight: 1.1, letterSpacing: "-0.03em" }}>Crafted for the<br/><span style={{ fontStyle: "italic", color: "var(--terra)" }}>Mindful Home</span></h1>
+            <p style={{ fontSize: 16, color: "var(--text-muted)", lineHeight: 1.8, marginBottom: 36, maxWidth: 420 }}>Discover unique handcrafted goods made by artisans who pour their heart into every piece.</p>
+            <div style={{ position: "relative", maxWidth: 400 }}>
+              <input className="input-field" placeholder="Search ceramics, candles, textiles..." value={search} onChange={e => setSearch(e.target.value)}
+                style={{ paddingLeft: 46, height: 52, fontSize: 14, borderRadius: 100, boxShadow: "0 2px 20px rgba(58,46,39,0.1)", border: "1.5px solid var(--border)" }} />
+              <div style={{ position: "absolute", left: 16, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}><Icon name="search" size={17} color="var(--text-muted)"/></div>
+            </div>
+          </div>
+          <div className="fade-in" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+            {[["🕯️","Candles","From ₹299"],["🧵","Textiles","From ₹599"],["🏺","Ceramics","From ₹399"],["🌿","Wellness","From ₹249"]].map(([em,cat,price], i) => (
+              <button key={cat} onClick={() => setCategory(cat)} style={{ background: "white", border: "1.5px solid var(--border)", borderRadius: 16, padding: "20px 16px", textAlign: "left", cursor: "pointer", transition: "all 0.2s ease", animationDelay: `${i*0.1}s` }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = "var(--terra)"; e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 8px 24px rgba(196,113,74,0.12)"; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = "var(--border)"; e.currentTarget.style.transform = ""; e.currentTarget.style.boxShadow = ""; }}>
+                <div style={{ fontSize: 28, marginBottom: 10 }}>{em}</div>
+                <p style={{ fontWeight: 600, fontSize: 14, marginBottom: 3 }}>{cat}</p>
+                <p style={{ fontSize: 12, color: "var(--text-muted)" }}>{price}</p>
+              </button>
+            ))}
           </div>
         </div>
-      </div>
-
-      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "24px 20px 0" }}>
-        <div style={{ display: "flex", gap: 10, overflowX: "auto", paddingBottom: 8 }}>
+      </div>     <div style={{ maxWidth: 1240, margin: "0 auto", padding: "28px 32px 0" }}>
+        <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 4 }}>
           {categories.map(cat => (
-            <button key={cat} onClick={() => setCategory(cat)} style={{ flexShrink: 0, padding: "7px 16px", borderRadius: 20, border: "1.5px solid", borderColor: category===cat?"var(--terra)":"var(--border)", background: category===cat?"var(--terra)":"white", color: category===cat?"white":"var(--text)", fontSize: 13, fontWeight: 500, transition: "all 0.2s", whiteSpace: "nowrap" }}>{cat}</button>
+            <button key={cat} onClick={() => setCategory(cat)} style={{ flexShrink: 0, padding: "6px 18px", borderRadius: 100, border: "1.5px solid", borderColor: category===cat?"var(--terra)":"var(--border)", background: category===cat?"var(--terra)":"transparent", color: category===cat?"white":"var(--text-muted)", fontSize: 12, fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase", transition: "all 0.2s", whiteSpace: "nowrap" }}>{cat}</button>
           ))}
         </div>
-      </div>
-
-      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "24px 20px 60px" }}>
+      </div>     <div style={{ maxWidth: 1240, margin: "0 auto", padding: "28px 32px 80px" }}>
         {loading ? (
           <div style={{ display: "flex", justifyContent: "center", padding: "80px 0" }}><div className="spinner"/></div>
         ) : productData.products.length === 0 ? (
@@ -370,24 +388,26 @@ const HomePage = () => {
 
 const ProductCard = ({ product }) => {
   const { navigate, addToCart } = useApp();
+  const [hovered, setHovered] = useState(false);
   return (
-    <div className="card fade-in" style={{ cursor: "pointer", transition: "transform 0.2s, box-shadow 0.2s" }}
-      onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = "0 12px 32px var(--shadow-md)"; }}
-      onMouseLeave={e => { e.currentTarget.style.transform = ""; e.currentTarget.style.boxShadow = ""; }}>
-      <div onClick={() => navigate("product", { id: product.id })} style={{ background: "var(--beige)", height: 200, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 72, overflow:"hidden" }}>{product.image?.startsWith("http") ? <img src={product.image} alt={product.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/> : product.image}</div>
-      <div style={{ padding: 16 }}>
-        <p style={{ fontSize: 11, color: "var(--sage-dark)", fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 6 }}>{product.category}</p>
-        <h3 onClick={() => navigate("product", { id: product.id })} style={{ fontFamily: "var(--font-serif)", fontSize: 18, marginBottom: 8, lineHeight: 1.3 }}>{product.name}</h3>
-        <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 12 }}>
-          <Icon name="star" size={13} color="#F59E0B"/>
-          <span style={{ fontSize: 13, color: "var(--text-muted)" }}>{Number(product.rating).toFixed(1)} ({product.review_count})</span>
+    <div className="product-card fade-in" style={{ cursor: "pointer", background: "white", borderRadius: 16, border: "1px solid var(--border)", overflow: "hidden", transition: "box-shadow 0.3s ease, transform 0.3s ease", transform: hovered?"translateY(-6px)":"none", boxShadow: hovered?"0 20px 40px rgba(58,46,39,0.12)":"0 1px 4px rgba(58,46,39,0.06)" }}
+      onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
+      <div onClick={() => navigate("product", { id: product.id })} style={{ background: "var(--beige)", height: 220, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 72, overflow: "hidden", position: "relative" }}>
+        {product.image?.startsWith("http") ? <img src={product.image} alt={product.name} className="product-img" style={{ width:"100%", height:"100%", objectFit:"cover" }}/> : <span style={{ transition: "transform 0.3s ease", transform: hovered?"scale(1.1)":"scale(1)", display:"block" }}>{product.image}</span>}
+        {product.stock === 0 && <div style={{ position: "absolute", inset: 0, background: "rgba(255,255,255,0.7)", display: "flex", alignItems: "center", justifyContent: "center" }}><span style={{ fontSize: 12, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-muted)" }}>Sold Out</span></div>}
+      </div>
+      <div style={{ padding: "18px 20px 20px" }}>
+        <p style={{ fontSize: 10, color: "var(--sage-dark)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 6 }}>{product.category}</p>
+        <h3 onClick={() => navigate("product", { id: product.id })} style={{ fontFamily: "var(--font-serif)", fontSize: 17, marginBottom: 6, lineHeight: 1.3, letterSpacing: "-0.01em" }}>{product.name}</h3>
+        <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 14 }}>
+          <span style={{ color: "#F59E0B", fontSize: 12 }}>{"★".repeat(Math.round(product.rating))}</span>
+          <span style={{ fontSize: 12, color: "var(--text-muted)" }}>{Number(product.rating).toFixed(1)} · {product.review_count} reviews</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <span style={{ fontSize: 20, fontWeight: 600, color: "var(--terra)", fontFamily: "var(--font-serif)" }}>₹{product.price}</span>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span className="tag" style={{ background: product.stock>0?"#E8F5E8":"#FDECEA", color: product.stock>0?"#2E7D32":"#C0392B" }}>{product.stock>0?`${product.stock} left`:"Sold out"}</span>
-            <button onClick={() => product.stock > 0 && addToCart(product)} className="btn-primary" style={{ padding: "7px 14px", fontSize: 12, opacity: product.stock===0?0.5:1 }} disabled={product.stock===0}>Add</button>
-          </div>
+          <span style={{ fontSize: 22, fontWeight: 500, color: "var(--terra)", fontFamily: "var(--font-serif)", letterSpacing: "-0.02em" }}>₹{product.price}</span>
+          <button onClick={() => product.stock > 0 && addToCart(product)} style={{ background: hovered && product.stock>0?"var(--terra)":"transparent", color: hovered && product.stock>0?"white":"var(--terra)", border: "1.5px solid var(--terra)", borderRadius: 100, padding: "7px 18px", fontSize: 12, fontWeight: 600, letterSpacing: "0.04em", transition: "all 0.2s ease", cursor: product.stock===0?"not-allowed":"pointer", opacity: product.stock===0?0.4:1 }} disabled={product.stock===0}>
+            {product.stock===0 ? "Sold Out" : "Add +"}
+          </button>
         </div>
       </div>
     </div>
@@ -1245,23 +1265,37 @@ const AboutPage = () => (
 const Footer = () => {
   const { navigate } = useApp();
   return (
-    <footer style={{ background: "var(--brown)", color: "rgba(255,255,255,0.8)", padding: "48px 20px 32px" }}>
-      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: 40, marginBottom: 40 }}>
+    <footer style={{ background: "#1C1410", color: "rgba(255,255,255,0.7)", padding: "64px 32px 32px" }}>
+      <div style={{ maxWidth: 1240, margin: "0 auto" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr", gap: 48, marginBottom: 56, paddingBottom: 56, borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
           <div>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}><Icon name="leaf" size={20} color="var(--sage-light)"/><span style={{ fontFamily: "var(--font-serif)", fontSize: 20, color: "white" }}>The Crafted Nest</span></div>
-            <p style={{ fontSize: 14, lineHeight: 1.8, opacity: 0.7, maxWidth: 280 }}>Handmade goods crafted with intention by artisans who believe in the beauty of slow making.</p>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
+              <div style={{ width: 32, height: 32, borderRadius: "50%", background: "var(--terra)", display: "flex", alignItems: "center", justifyContent: "center" }}><Icon name="leaf" size={16} color="white"/></div>
+              <span style={{ fontFamily: "var(--font-serif)", fontSize: 18, color: "white", letterSpacing: "-0.02em" }}>The Crafted Nest</span>
+            </div>
+            <p style={{ fontSize: 13, lineHeight: 1.9, opacity: 0.55, maxWidth: 240, marginBottom: 24 }}>Handmade goods crafted with intention by artisans who believe in the beauty of slow making.</p>
+            <div style={{ display: "flex", gap: 10 }}>
+              {["📸","📌","✉️"].map(em => <div key={em} style={{ width: 36, height: 36, borderRadius: "50%", background: "rgba(255,255,255,0.06)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, cursor: "pointer" }}>{em}</div>)}
+            </div>
           </div>
           <div>
-            <p style={{ fontWeight: 600, fontSize: 12, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 14, color: "var(--sage-light)" }}>Shop</p>
-            {["All Products","Ceramics","Textiles","Candles","Wellness"].map(l => <button key={l} onClick={() => navigate("home")} style={{ display: "block", background: "none", border: "none", color: "rgba(255,255,255,0.7)", fontSize: 14, marginBottom: 8, textAlign: "left", cursor: "pointer" }}>{l}</button>)}
+            <p style={{ fontWeight: 600, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 18, color: "rgba(255,255,255,0.4)" }}>Shop</p>
+            {["All Products","Ceramics","Textiles","Candles","Wellness"].map(l => <button key={l} onClick={() => navigate("home")} style={{ display: "block", background: "none", border: "none", color: "rgba(255,255,255,0.55)", fontSize: 13, marginBottom: 10, textAlign: "left", cursor: "pointer", transition: "color 0.2s" }} onMouseEnter={e=>e.target.style.color="white"} onMouseLeave={e=>e.target.style.color="rgba(255,255,255,0.55)"}>{l}</button>)}
           </div>
           <div>
-            <p style={{ fontWeight: 600, fontSize: 12, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 14, color: "var(--sage-light)" }}>Company</p>
-            {[["About","about"],["Contact","contact"],["Login","login"],["Register","register"]].map(([l,p]) => <button key={l} onClick={() => navigate(p)} style={{ display: "block", background: "none", border: "none", color: "rgba(255,255,255,0.7)", fontSize: 14, marginBottom: 8, textAlign: "left", cursor: "pointer" }}>{l}</button>)}
+            <p style={{ fontWeight: 600, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 18, color: "rgba(255,255,255,0.4)" }}>Company</p>
+            {[["About","about"],["Contact","contact"],["Login","login"],["Register","register"]].map(([l,p]) => <button key={l} onClick={() => navigate(p)} style={{ display: "block", background: "none", border: "none", color: "rgba(255,255,255,0.55)", fontSize: 13, marginBottom: 10, textAlign: "left", cursor: "pointer", transition: "color 0.2s" }} onMouseEnter={e=>e.target.style.color="white"} onMouseLeave={e=>e.target.style.color="rgba(255,255,255,0.55)"}>{l}</button>)}
+          </div>
+          <div>
+            <p style={{ fontWeight: 600, fontSize: 11, textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 18, color: "rgba(255,255,255,0.4)" }}>Newsletter</p>
+            <p style={{ fontSize: 13, opacity: 0.55, marginBottom: 16, lineHeight: 1.7 }}>Get updates on new arrivals and artisan stories.</p>
+            <div style={{ display: "flex", gap: 8 }}>
+              <input placeholder="your@email.com" style={{ flex: 1, padding: "9px 14px", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: "white", fontSize: 13, outline: "none" }}/>
+              <button style={{ padding: "9px 16px", background: "var(--terra)", border: "none", borderRadius: 8, color: "white", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>→</button>
+            </div>
           </div>
         </div>
-        <div style={{ borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: 24, display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 12, fontSize: 12, opacity: 0.5 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 12, fontSize: 12, opacity: 0.35 }}>
           <span>© {new Date().getFullYear()} The Crafted Nest. All rights reserved.</span>
           <span>Made with 🤍 for mindful living</span>
         </div>
