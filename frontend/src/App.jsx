@@ -295,11 +295,10 @@ const Navbar = () => {
           ) : (
             <button onClick={() => navigate("login")} style={{ background: "none", border: "none", padding: 10 }}><Icon name="user" size={20}/></button>
           )}
-          <button onClick={() => setCartOpen(true)} style={{ background: "none", border: "none", padding: 10, position: "relative" }}>
+          {user && <button onClick={() => setCartOpen(true)} style={{ background: "none", border: "none", padding: 10, position: "relative" }}>
             <Icon name="cart" size={20}/>
             {cartCount > 0 && <span style={{ position: "absolute", top: 4, right: 4, background: "var(--terra)", color: "white", borderRadius: "50%", width: 17, height: 17, fontSize: 10, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>{cartCount}</span>}
-          </button>
-        </div>
+          </button>}        </div>
       </div>
     </nav>
   );
