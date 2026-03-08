@@ -200,7 +200,7 @@ const CartSidebar = () => {
             </div>
           ) : cart.map(item => (
             <div key={item.id} style={{ display: "flex", gap: 14, padding: "16px 0", borderBottom: "1px solid var(--border)" }}>
-              <div style={{ width: 56, height: 56, borderRadius: 8, background: "var(--beige)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, flexShrink: 0 }}>{item.image}</div>
+              <div style={{ width: 56, height: 56, borderRadius: 8, background: "var(--beige)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, flexShrink: 0, overflow: "hidden" }}>{item.image?.startsWith("http") ? <img src={item.image} alt={item.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/> : item.image}</div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p style={{ fontWeight: 500, fontSize: 14, marginBottom: 4, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.name}</p>
                 <p style={{ color: "var(--terra)", fontWeight: 500, fontSize: 14 }}>₹{item.price}</p>
@@ -673,8 +673,7 @@ const CheckoutPage = () => {
           <h3 style={{ fontFamily: "var(--font-serif)", fontSize: 20, marginBottom: 20 }}>Order Summary</h3>
           {cart.map(item => (
             <div key={item.id} style={{ display: "flex", gap: 12, marginBottom: 16 }}>
-              <div style={{ width: 44, height: 44, borderRadius: 6, background: "var(--beige)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, flexShrink: 0 }}>{item.image}</div>
-              <div style={{ flex: 1 }}>
+              <div style={{ width: 44, height: 44, borderRadius: 6, background: "var(--beige)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, flexShrink: 0, overflow: "hidden" }}>{item.image?.startsWith("http") ? <img src={item.image} alt={item.name} style={{ width:"100%", height:"100%", objectFit:"cover" }}/> : item.image}</div>              <div style={{ flex: 1 }}>
                 <p style={{ fontSize: 13, fontWeight: 500 }}>{item.name}</p>
                 <p style={{ fontSize: 12, color: "var(--text-muted)" }}>Qty: {item.qty}</p>
               </div>
