@@ -365,7 +365,7 @@ const ProductCard = ({ product }) => {
     <div className="card fade-in" style={{ cursor: "pointer", transition: "transform 0.2s, box-shadow 0.2s" }}
       onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = "0 12px 32px var(--shadow-md)"; }}
       onMouseLeave={e => { e.currentTarget.style.transform = ""; e.currentTarget.style.boxShadow = ""; }}>
-      <div onClick={() => navigate("product", { id: product.id })} style={{ background: "var(--beige)", height: 200, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 72 }}>{product.image}</div>
+      <div onClick={() => navigate("product", { id: product.id })} style={{ background: "var(--beige)", height: 200, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 72, overflow:"hidden" }}>{product.image?.startsWith("http") ? <img src={product.image} alt={product.name} style={{ wi
       <div style={{ padding: 16 }}>
         <p style={{ fontSize: 11, color: "var(--sage-dark)", fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 6 }}>{product.category}</p>
         <h3 onClick={() => navigate("product", { id: product.id })} style={{ fontFamily: "var(--font-serif)", fontSize: 18, marginBottom: 8, lineHeight: 1.3 }}>{product.name}</h3>
@@ -408,7 +408,7 @@ const ProductPage = () => {
       <button onClick={() => navigate("home")} style={{ background: "none", border: "none", display: "flex", alignItems: "center", gap: 6, fontSize: 14, color: "var(--text-muted)", marginBottom: 32 }}><Icon name="arrow_left" size={16}/> Back to Shop</button>
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 60, alignItems: "start" }}>
         <div>
-          <div style={{ background: "var(--beige)", borderRadius: 16, height: 420, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 140, border: "1px solid var(--border)" }}>{product.image}</div>
+          <div style={{ background: "var(--beige)", borderRadius: 16, height: 420, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 140, border: "1px solid var(--border)", overflow:"hidden" }}>{product.image?.startsWith("http") ? <img src={product.i
         </div>
         <div className="fade-in">
           <p style={{ fontSize: 12, color: "var(--sage-dark)", fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>{product.category}</p>
