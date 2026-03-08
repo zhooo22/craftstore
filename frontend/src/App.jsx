@@ -857,7 +857,10 @@ const AdminProducts = ({ showToast }) => {
                 <tr key={p.id} style={{ borderTop: "1px solid var(--border)" }}>
                   <td style={{ padding: "12px 16px" }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                      <span style={{ fontSize: 24 }}>{p.image}</span>
+                      {p.image?.startsWith("http") 
+  ? <img src={p.image} alt={p.name} style={{ width: 40, height: 40, objectFit: "cover", borderRadius: 6 }}/>
+  : <span style={{ fontSize: 24 }}>{p.image}</span>
+}
                       <div><p style={{ fontSize: 14, fontWeight: 500 }}>{p.name}</p><p style={{ fontSize: 12, color: "var(--text-muted)" }}>{p.sku}</p></div>
                     </div>
                   </td>
