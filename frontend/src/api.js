@@ -1,4 +1,4 @@
-// frontend/src/api.js
+﻿// frontend/src/api.js
 // ─────────────────────────────────────────────────────────────────────────────
 // Centralized API client for all backend communication.
 // Automatically attaches JWT from localStorage.
@@ -71,6 +71,10 @@ export const users = {
   get:        (id)            => get(`/users/${id}`),
   updateRole: (id, role)      => put(`/users/${id}/role`, { role }),
   deactivate: (id)            => del(`/users/${id}`),
+};// ── Reviews ───────────────────────────────────────────────────────────────────
+export const reviews = {
+  list:   (productId)              => get(`/reviews/${productId}`),
+  submit: (productId, data)        => post(`/reviews/${productId}`, data),
 };
 
 // ── Token helpers ─────────────────────────────────────────────────────────────

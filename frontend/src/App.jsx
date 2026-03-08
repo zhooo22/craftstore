@@ -5,6 +5,15 @@
 // ─────────────────────────────────────────────────────────────────────────────
 import { useState, useEffect, useContext, createContext, useCallback, useRef } from "react";
 import * as api from "./api.js";
+const StarRating = ({ value, onChange, size = 24 }) => (
+  <div style={{ display: "flex", gap: 4 }}>
+    {[1,2,3,4,5].map(s => (
+      <button key={s} onClick={() => onChange && onChange(s)} style={{ background: "none", border: "none", padding: 2, cursor: onChange ? "pointer" : "default", fontSize: size }}>
+        <span style={{ color: s <= value ? "#F59E0B" : "#E5E7EB" }}>★</span>
+      </button>
+    ))}
+  </div>
+);
 
 // ============================================================
 // GLOBAL STYLES
@@ -436,6 +445,117 @@ const ProductPage = () => {
             <span>🌿 Sustainably made</span><span>📦 Free shipping over ₹75</span><span>↩️ 30-day returns</span>
           </div>
         </div>
+      </div>
+      <ReviewsSection productId={pageData.id}/>
+    </div>
+  );
+};
+
+const ReviewsSection = ({ productId }) => {
+  const { user, showToast } = useApp();
+  const [reviews, setReviews] = useState([]);
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState("");
+  const [orderId, setOrderId] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  const load = () => {
+    api.reviews.list(productId).then(d => { setReviews(d.reviews); setLoading(false); }).catch(() => setLoading(false));
+  };
+
+  useEffect(() => { load(); }, [productId]);
+
+  useEffect(() => {
+    if (!user) return;
+    api.orders.myOrders().then(d => {
+      const delivered = d.orders.filter(o => o.status === "delivered" && o.items.some(i => i.product_id === productId || i.productId === productId));
+      setOrders(delivered);
+      if (delivered.length > 0) setOrderId(delivered[0].id);
+    }).catch(() => {});
+  }, [user, productId]);
+
+  const handleSubmit = async () => {
+    if (!rating) { showToast("Please select a star rating.", "error"); return; }
+    if (!orderId) { showToast("No eligible delivered order found.", "error"); return; }
+    setSubmitting(true);
+    try {
+      await api.reviews.submit(productId, { rating, comment, orderId });
+      showToast("Review submitted! Thank you 🌿");
+      setRating(0); setComment(""); load();
+    } catch (e) { showToast(e.message, "error"); }
+    finally { setSubmitting(false); }
+  };
+
+  return (
+    <div style={{ marginTop: 60, borderTop: "1px solid var(--border)", paddingTop: 48 }}>
+      <h2 style={{ fontFamily: "var(--font-serif)", fontSize: 30, fontWeight: 300, marginBottom: 32 }}>Customer Reviews</h2>
+      <div style={{ display: "grid", gridTemplateColumns: reviews.length > 0 ? "1fr 1fr" : "1fr", gap: 40, alignItems: "start" }}>
+        <div>
+          {loading ? <div className="spinner"/> : reviews.length === 0 ? (
+            <div style={{ padding: "40px 0", color: "var(--text-muted)", textAlign: "center" }}>
+              <div style={{ fontSize: 40, marginBottom: 12 }}>💬</div>
+              <p style={{ fontFamily: "var(--font-serif)", fontSize: 18 }}>No reviews yet. Be the first!</p>
+            </div>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+              {reviews.map(r => (
+                <div key={r.id} className="card" style={{ padding: 20 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <div style={{ width: 36, height: 36, borderRadius: "50%", background: "var(--sage)", color: "white", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 600, fontSize: 14 }}>{r.user_name?.[0]}</div>
+                      <div>
+                        <p style={{ fontWeight: 500, fontSize: 14 }}>{r.user_name}</p>
+                        <p style={{ fontSize: 12, color: "var(--text-muted)" }}>{r.created_at?.split("T")[0]}</p>
+                      </div>
+                    </div>
+                    <StarRating value={r.rating} size={16}/>
+                  </div>
+                  {r.comment && <p style={{ fontSize: 14, color: "var(--text-muted)", lineHeight: 1.7 }}>{r.comment}</p>}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+        {user ? (
+          <div className="card" style={{ padding: 28, borderLeft: "4px solid var(--terra)" }}>
+            <h3 style={{ fontFamily: "var(--font-serif)", fontSize: 22, marginBottom: 6 }}>Write a Review</h3>
+            <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 20 }}>Only customers with a delivered order can review.</p>
+            {orders.length === 0 ? (
+              <div style={{ background: "var(--beige)", borderRadius: 8, padding: 16, fontSize: 14, color: "var(--text-muted)" }}>
+                You need a delivered order for this product to leave a review.
+              </div>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                <div>
+                  <label style={{ fontSize: 13, fontWeight: 500, display: "block", marginBottom: 8 }}>Your Rating</label>
+                  <StarRating value={rating} onChange={setRating} size={32}/>
+                </div>
+                {orders.length > 1 && (
+                  <div>
+                    <label style={{ fontSize: 13, fontWeight: 500, display: "block", marginBottom: 6 }}>Order</label>
+                    <select className="input-field" value={orderId} onChange={e => setOrderId(e.target.value)}>
+                      {orders.map(o => <option key={o.id} value={o.id}>{o.id}</option>)}
+                    </select>
+                  </div>
+                )}
+                <div>
+                  <label style={{ fontSize: 13, fontWeight: 500, display: "block", marginBottom: 6 }}>Your Review (optional)</label>
+                  <textarea className="input-field" rows={4} placeholder="Share your experience with this product..." value={comment} onChange={e => setComment(e.target.value)} style={{ resize: "vertical" }}/>
+                </div>
+                <button className="btn-primary" onClick={handleSubmit} disabled={submitting || !rating}>{submitting ? "Submitting..." : "Submit Review"}</button>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="card" style={{ padding: 28, textAlign: "center" }}>
+            <div style={{ fontSize: 40, marginBottom: 12 }}>⭐</div>
+            <p style={{ fontFamily: "var(--font-serif)", fontSize: 20, marginBottom: 8 }}>Have this product?</p>
+            <p style={{ fontSize: 14, color: "var(--text-muted)", marginBottom: 20 }}>Sign in to leave a review.</p>
+            <button className="btn-primary" onClick={() => {}}>Sign In to Review</button>
+          </div>
+        )}
       </div>
     </div>
   );

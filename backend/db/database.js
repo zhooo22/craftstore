@@ -1,4 +1,4 @@
-// backend/db/database.js
+﻿// backend/db/database.js
 // ─────────────────────────────────────────────────────────────────────────────
 // SQLite database initialization using better-sqlite3 (synchronous, zero config)
 // Schema: Users, Products, Orders, OrderItems, Sessions (password reset tokens)
@@ -102,8 +102,19 @@ db.exec(`
     subtotal    REAL    NOT NULL
   );
 
-  -- ── Indexes ───────────────────────────────────────────────────────────────────
-  CREATE INDEX IF NOT EXISTS idx_users_email        ON users(email);
+  -- ── Reviews ──────────────────────────────────────────────────────────────────
+  CREATE TABLE IF NOT EXISTS reviews (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    product_id  INTEGER NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+    user_id     INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    order_id    TEXT    NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+    rating      INTEGER NOT NULL CHECK(rating BETWEEN 1 AND 5),
+    comment     TEXT    NOT NULL DEFAULT '',
+    created_at  TEXT    NOT NULL DEFAULT (datetime('now')),
+    UNIQUE(product_id, user_id, order_id)
+  );
+
+  -- ── Indexes ─────────────────────────────────────────────────────────────────── CREATE INDEX IF NOT EXISTS idx_users_email        ON users(email);
   CREATE INDEX IF NOT EXISTS idx_products_category  ON products(category);
   CREATE INDEX IF NOT EXISTS idx_products_slug      ON products(slug);
   CREATE INDEX IF NOT EXISTS idx_orders_user_id     ON orders(user_id);
