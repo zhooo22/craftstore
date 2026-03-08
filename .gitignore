@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+backend/node_modules/
+frontend/node_modules/
+
+# Database (Railway uses ephemeral disk — see note in README)
+backend/db/*.db
+backend/db/*.db-shm
+backend/db/*.db-wal
+
+# Environment secrets
+.env
+backend/.env
+
+# Frontend build output (Railway builds this fresh)
+frontend/dist/
+
+# Logs & misc
+*.log
+.DS_Store
