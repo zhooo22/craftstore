@@ -1049,7 +1049,13 @@ const ProductForm = ({ product, onSave, onCancel }) => {
 
   const handleSave = async () => {
     if (!form.name||!form.price||!form.sku||!form.category) { setError("Name, price, SKU, and category are required."); return; }
-    setError(""); onSave(form);
+    if (form.stock === "" || form.stock === null || form.stock === undefined) { setError("Stock quantity is required."); return; }
+    setError("");
+    onSave({
+      ...form,
+      price: parseFloat(form.price),
+      stock: parseInt(form.stock, 10),
+    });
   };
 
   return (
