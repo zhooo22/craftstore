@@ -29,5 +29,3 @@ router.post('/', requireAuth, requireAdmin, upload.single('image'), (req, res, n
 });
 
 module.exports = router;
-```
-
