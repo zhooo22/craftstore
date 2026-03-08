@@ -203,7 +203,7 @@ const CartSidebar = () => {
               <div style={{ width: 56, height: 56, borderRadius: 8, background: "var(--beige)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, flexShrink: 0 }}>{item.image}</div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p style={{ fontWeight: 500, fontSize: 14, marginBottom: 4, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{item.name}</p>
-                <p style={{ color: "var(--terra)", fontWeight: 500, fontSize: 14 }}>${item.price}</p>
+                <p style={{ color: "var(--terra)", fontWeight: 500, fontSize: 14 }}>₹{item.price}</p>
                 <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 8 }}>
                   <button onClick={() => updateCartQty(item.id, item.qty - 1)} style={{ width: 26, height: 26, border: "1.5px solid var(--border)", borderRadius: 4, background: "white", display: "flex", alignItems: "center", justifyContent: "center" }}><Icon name="minus" size={12}/></button>
                   <span style={{ fontSize: 14, fontWeight: 500, minWidth: 20, textAlign: "center" }}>{item.qty}</span>
@@ -218,7 +218,7 @@ const CartSidebar = () => {
           <div style={{ padding: "20px 24px", borderTop: "1px solid var(--border)", background: "white" }}>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 16, fontSize: 16 }}>
               <span style={{ fontFamily: "var(--font-serif)" }}>Subtotal</span>
-              <span style={{ fontWeight: 600, color: "var(--terra)" }}>${cartTotal.toFixed(2)}</span>
+              <span style={{ fontWeight: 600, color: "var(--terra)" }}>₹{cartTotal.toFixed(2)}</span>
             </div>
             <button className="btn-primary" style={{ width: "100%" }} onClick={() => { setCartOpen(false); navigate("checkout"); }}>Proceed to Checkout</button>
           </div>
@@ -374,7 +374,7 @@ const ProductCard = ({ product }) => {
           <span style={{ fontSize: 13, color: "var(--text-muted)" }}>{Number(product.rating).toFixed(1)} ({product.review_count})</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <span style={{ fontSize: 20, fontWeight: 600, color: "var(--terra)", fontFamily: "var(--font-serif)" }}>${product.price}</span>
+          <span style={{ fontSize: 20, fontWeight: 600, color: "var(--terra)", fontFamily: "var(--font-serif)" }}>₹{product.price}</span>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <span className="tag" style={{ background: product.stock>0?"#E8F5E8":"#FDECEA", color: product.stock>0?"#2E7D32":"#C0392B" }}>{product.stock>0?`${product.stock} left`:"Sold out"}</span>
             <button onClick={() => product.stock > 0 && addToCart(product)} className="btn-primary" style={{ padding: "7px 14px", fontSize: 12, opacity: product.stock===0?0.5:1 }} disabled={product.stock===0}>Add</button>
@@ -417,7 +417,7 @@ const ProductPage = () => {
             {[1,2,3,4,5].map(s => <Icon key={s} name="star" size={16} color={s<=Math.floor(product.rating)?"#F59E0B":"#E5E7EB"}/>)}
             <span style={{ fontSize: 14, color: "var(--text-muted)" }}>{Number(product.rating).toFixed(1)} · {product.review_count} reviews</span>
           </div>
-          <p style={{ fontSize: 36, fontFamily: "var(--font-serif)", color: "var(--terra)", marginBottom: 24 }}>${product.price}</p>
+          <p style={{ fontSize: 36, fontFamily: "var(--font-serif)", color: "var(--terra)", marginBottom: 24 }}>₹{product.price}</p>
           <p style={{ fontSize: 15, lineHeight: 1.8, color: "var(--text-muted)", marginBottom: 28 }}>{product.description}</p>
           <div style={{ padding: 16, background: "var(--beige)", borderRadius: 8, marginBottom: 28 }}>
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, marginBottom: 6 }}><span>SKU:</span><span style={{ fontWeight: 500 }}>{product.sku}</span></div>
@@ -430,7 +430,7 @@ const ProductPage = () => {
                 <span style={{ width: 44, textAlign: "center", fontWeight: 500 }}>{qty}</span>
                 <button onClick={() => setQty(Math.min(product.stock, qty+1))} style={{ width: 40, height: 44, background: "white", border: "none", display: "flex", alignItems: "center", justifyContent: "center" }}><Icon name="plus" size={14}/></button>
               </div>
-              <button className="btn-primary" style={{ flex: 1, height: 44 }} onClick={() => addToCart(product, qty)}>Add to Cart — ${(product.price * qty).toFixed(2)}</button>
+              <button className="btn-primary" style={{ flex: 1, height: 44 }} onClick={() => addToCart(product, qty)}>Add to Cart — ₹{(product.price * qty).toFixed(2)}</button>
             </div>
           )}
           <div style={{ display: "flex", gap: 16, fontSize: 13, color: "var(--text-muted)", flexWrap: "wrap" }}>
@@ -679,7 +679,7 @@ const CheckoutPage = () => {
                 <p style={{ fontSize: 13, fontWeight: 500 }}>{item.name}</p>
                 <p style={{ fontSize: 12, color: "var(--text-muted)" }}>Qty: {item.qty}</p>
               </div>
-              <p style={{ fontSize: 14, fontWeight: 500 }}>${(item.price*item.qty).toFixed(2)}</p>
+              <p style={{ fontSize: 14, fontWeight: 500 }}>₹{(item.price*item.qty).toFixed(2)}</p>
             </div>
           ))}
           <div style={{ borderTop: "1px solid var(--border)", paddingTop: 16, marginTop: 8 }}>
@@ -687,7 +687,7 @@ const CheckoutPage = () => {
               <div key={k} style={{ display: "flex", justifyContent: "space-between", fontSize: 14, marginBottom: 8 }}><span style={{ color: "var(--text-muted)" }}>{k}</span><span>{v}</span></div>
             ))}
             <div style={{ display: "flex", justifyContent: "space-between", fontWeight: 700, fontSize: 16, marginTop: 12, paddingTop: 12, borderTop: "1px solid var(--border)" }}>
-              <span>Total</span><span style={{ color: "var(--terra)" }}>${total.toFixed(2)}</span>
+              <span>Total</span><span style={{ color: "var(--terra)" }}>₹{total.toFixed(2)}</span>
             </div>
           </div>
         </div>
@@ -733,7 +733,7 @@ const OrdersPage = () => {
                 </div>
                 <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
                   <span className={`tag ${statusColors[order.status]||"badge-orange"}`} style={{ textTransform: "capitalize" }}>{order.status}</span>
-                  <span style={{ fontWeight: 700, color: "var(--terra)", fontSize: 16 }}>${order.total.toFixed(2)}</span>
+                  <span style={{ fontWeight: 700, color: "var(--terra)", fontSize: 16 }}>₹{order.total.toFixed(2)}</span>
                 </div>
               </div>
               <div style={{ borderTop: "1px solid var(--border)", paddingTop: 16 }}>
@@ -863,7 +863,7 @@ const AdminProducts = ({ showToast }) => {
                     </div>
                   </td>
                   <td style={{ padding: "12px 16px", fontSize: 14, color: "var(--text-muted)" }}>{p.category}</td>
-                  <td style={{ padding: "12px 16px", fontSize: 14, fontWeight: 600, color: "var(--terra)" }}>${p.price}</td>
+                  <td style={{ padding: "12px 16px", fontSize: 14, fontWeight: 600, color: "var(--terra)" }}>₹{p.price}</td>
                   <td style={{ padding: "12px 16px" }}><span className={`tag ${p.stock>0?"badge-green":"badge-red"}`}>{p.stock}</span></td>
                   <td style={{ padding: "12px 16px", fontSize: 14 }}>⭐ {Number(p.rating).toFixed(1)}</td>
                   <td style={{ padding: "12px 16px" }}><span className={`tag ${p.is_active?"badge-green":"badge-red"}`}>{p.is_active?"Active":"Hidden"}</span></td>
