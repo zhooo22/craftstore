@@ -887,6 +887,24 @@ const ProductForm = ({ product, onSave, onCancel }) => {
   const CATS = ["Ceramics","Textiles","Candles","Stationery","Wellness","Home Decor","Accessories","Food & Pantry","Kitchen"];
   const [form, setForm] = useState({ name: product?.name||"", category: product?.category||"Ceramics", price: product?.price||"", stock: product?.stock||"", description: product?.description||"", image: product?.image||"🎁", sku: product?.sku||"", is_active: product?.is_active??1, id: product?.id });
   const [error, setError] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [useUrl, setUseUrl] = useState(product?.image?.startsWith("http")||false);
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+      const token = localStorage.getItem('craft_token');
+      const res = await fetch('/api/upload', { method: 'POST', headers: { 'Authorization': `Bearer ${token}` }, body: formData });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      setForm(f => ({ ...f, image: data.url }));
+    } catch (e) { setError(e.message); }
+    finally { setUploading(false); }
+  };
 
   const handleSave = async () => {
     if (!form.name||!form.price||!form.sku||!form.category) { setError("Name, price, SKU, and category are required."); return; }
@@ -898,7 +916,7 @@ const ProductForm = ({ product, onSave, onCancel }) => {
       <h3 style={{ fontFamily: "var(--font-serif)", fontSize: 20, marginBottom: 20 }}>{form.id?"Edit Product":"Add New Product"}</h3>
       {error && <div style={{ background: "#FDECEA", color: "#C0392B", padding: "10px 14px", borderRadius: 6, fontSize: 13, marginBottom: 16 }}>{error}</div>}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-        {[["name","Product Name","text","Hand-thrown Ceramic Mug"],["sku","SKU","text","CER-001"],["price","Price (₹)","number","38"],["stock","Stock","number","10"]].map(([k,l,t,p]) => (
+        {[["name","Product Name","text","Hand-thrown Ceramic Mug"],["sku","SKU","text","CER-001"],["price","Price (₹)","number","999"],["stock","Stock","number","10"]].map(([k,l,t,p]) => (
           <div key={k}><label style={{ fontSize: 13, fontWeight: 500, display: "block", marginBottom: 6 }}>{l}</label><input className="input-field" type={t} placeholder={p} value={form[k]} onChange={e => setForm({...form,[k]:e.target.value})}/></div>
         ))}
         <div><label style={{ fontSize: 13, fontWeight: 500, display: "block", marginBottom: 6 }}>Category</label>
@@ -909,10 +927,28 @@ const ProductForm = ({ product, onSave, onCancel }) => {
         </div>
         <div style={{ gridColumn: "1/-1" }}><label style={{ fontSize: 13, fontWeight: 500, display: "block", marginBottom: 6 }}>Description</label><textarea className="input-field" rows={3} value={form.description} onChange={e => setForm({...form,description:e.target.value})} style={{ resize: "vertical" }}/></div>
         <div style={{ gridColumn: "1/-1" }}>
-          <label style={{ fontSize: 13, fontWeight: 500, display: "block", marginBottom: 8 }}>Emoji Icon</label>
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            {EMOJIS.map(em => <button key={em} onClick={() => setForm({...form,image:em})} style={{ width: 40, height: 40, fontSize: 22, border: `2px solid ${form.image===em?"var(--terra)":"var(--border)"}`, borderRadius: 6, background: form.image===em?"var(--beige-dark)":"white", cursor: "pointer" }}>{em}</button>)}
+          <label style={{ fontSize: 13, fontWeight: 500, display: "block", marginBottom: 8 }}>Product Image</label>
+          <div style={{ display: "flex", gap: 12, marginBottom: 12 }}>
+            <button onClick={() => setUseUrl(false)} style={{ padding: "6px 16px", borderRadius: 20, border: "1.5px solid", borderColor: !useUrl?"var(--terra)":"var(--border)", background: !useUrl?"var(--terra)":"white", color: !useUrl?"white":"var(--text)", fontSize: 13, cursor: "pointer" }}>Emoji</button>
+            <button onClick={() => setUseUrl(true)} style={{ padding: "6px 16px", borderRadius: 20, border: "1.5px solid", borderColor: useUrl?"var(--terra)":"var(--border)", background: useUrl?"var(--terra)":"white", color: useUrl?"white":"var(--text)", fontSize: 13, cursor: "pointer" }}>Upload Photo</button>
           </div>
+          {!useUrl ? (
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              {EMOJIS.map(em => <button key={em} onClick={() => setForm({...form,image:em})} style={{ width: 40, height: 40, fontSize: 22, border: `2px solid ${form.image===em?"var(--terra)":"var(--border)"}`, borderRadius: 6, background: form.image===em?"var(--beige-dark)":"white", cursor: "pointer" }}>{em}</button>)}
+            </div>
+          ) : (
+            <div>
+              <input type="file" accept="image/*" onChange={handleImageUpload} style={{ display: "none" }} id="image-upload"/>
+              <label htmlFor="image-upload" style={{ display: "inline-block", padding: "10px 20px", background: "var(--beige)", border: "1.5px dashed var(--border)", borderRadius: 8, cursor: uploading?"not-allowed":"pointer", fontSize: 14, color: "var(--text-muted)" }}>
+                {uploading ? "⏳ Uploading..." : "📷 Click to choose a photo"}
+              </label>
+              {form.image?.startsWith("http") && (
+                <div style={{ marginTop: 12 }}>
+                  <img src={form.image} alt="Preview" style={{ width: 120, height: 120, objectFit: "cover", borderRadius: 8, border: "1px solid var(--border)" }}/>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
       <div style={{ display: "flex", gap: 12, marginTop: 20 }}>
@@ -954,7 +990,7 @@ const AdminOrders = ({ showToast }) => {
                   <td style={{ padding: "12px 16px", fontSize: 14, fontWeight: 600 }}>{o.id}</td>
                   <td style={{ padding: "12px 16px", fontSize: 14 }}>{o.customer?.name||"—"}</td>
                   <td style={{ padding: "12px 16px", fontSize: 13, color: "var(--text-muted)" }}>{o.items.length} item{o.items.length!==1?"s":""}</td>
-                  <td style={{ padding: "12px 16px", fontSize: 14, fontWeight: 600, color: "var(--terra)" }}>${o.total.toFixed(2)}</td>
+                  <td style={{ padding: "12px 16px", fontSize: 14, fontWeight: 600, color: "var(--terra)" }}>₹{o.total.toFixed(2)}</td>
                   <td style={{ padding: "12px 16px", fontSize: 13, color: "var(--text-muted)" }}>{o.createdAt?.split("T")[0]}</td>
                   <td style={{ padding: "12px 16px" }}><span className={`tag ${STATUS_COLORS[o.status]||"badge-orange"}`} style={{ textTransform: "capitalize" }}>{o.status}</span></td>
                   <td style={{ padding: "12px 16px" }}>
@@ -1008,7 +1044,7 @@ const AdminUsers = ({ showToast }) => {
                   <td style={{ padding: "12px 16px", fontSize: 14, color: "var(--text-muted)" }}>{u.email}</td>
                   <td style={{ padding: "12px 16px" }}><span className={`tag ${u.role==="admin"?"badge-orange":"badge-blue"}`}>{u.role}</span></td>
                   <td style={{ padding: "12px 16px", fontSize: 14 }}>{u.order_count}</td>
-                  <td style={{ padding: "12px 16px", fontSize: 14, color: "var(--terra)", fontWeight: 500 }}>${Number(u.total_spent).toFixed(2)}</td>
+                  <td style={{ padding: "12px 16px", fontSize: 14, color: "var(--terra)", fontWeight: 500 }}>₹{Number(u.total_spent).toFixed(2)}</td>
                   <td style={{ padding: "12px 16px", fontSize: 13, color: "var(--text-muted)" }}>{u.created_at?.split("T")[0]}</td>
                   <td style={{ padding: "12px 16px" }}>
                     <select value={u.role} onChange={e => handleRole(u.id, e.target.value, u.name)} style={{ padding: "6px 10px", border: "1.5px solid var(--border)", borderRadius: 4, fontSize: 13, background: "white", cursor: "pointer", outline: "none" }}>
@@ -1026,9 +1062,6 @@ const AdminUsers = ({ showToast }) => {
   );
 };
 
-// ============================================================
-// ABOUT + FOOTER
-// ============================================================
 const AboutPage = () => (
   <div style={{ maxWidth: 820, margin: "0 auto", padding: "60px 20px 80px" }}>
     <div style={{ textAlign: "center", marginBottom: 60 }}>
@@ -1082,9 +1115,6 @@ const Footer = () => {
   );
 };
 
-// ============================================================
-// ROUTER + ROOT
-// ============================================================
 const Router = () => {
   const { page, authLoading } = useApp();
   if (authLoading) return <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "60vh" }}><div className="spinner"/></div>;
