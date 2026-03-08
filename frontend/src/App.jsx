@@ -250,7 +250,7 @@ const Navbar = () => {
           <span style={{ fontFamily: "var(--font-serif)", fontSize: 22, fontWeight: 500 }}>The Crafted Nest</span>
         </button>
         <div style={{ display: "flex", gap: 28 }}>
-          {[["home","Shop"],["about","About"]].map(([p,label]) => (
+          {[["home","Shop"],["about","About"],["contact","Contact"]].map(([p,label]) => (
             <button key={p} onClick={() => navigate(p)} style={{ background: "none", border: "none", fontSize: 14, color: page===p?"var(--terra)":"var(--text)", fontWeight: page===p?500:400 }}>{label}</button>
           ))}
           {user?.role === "admin" && (
@@ -1063,6 +1063,40 @@ const AdminUsers = ({ showToast }) => {
   );
 };
 
+const ContactPage = () => (
+  <div style={{ maxWidth: 820, margin: "0 auto", padding: "60px 20px 80px" }}>
+    <div style={{ textAlign: "center", marginBottom: 60 }}>
+      <p style={{ fontSize: 12, letterSpacing: "0.15em", textTransform: "uppercase", color: "var(--sage-dark)", fontWeight: 500, marginBottom: 12 }}>Get In Touch</p>
+      <h1 style={{ fontFamily: "var(--font-serif)", fontSize: "clamp(36px,5vw,52px)", fontWeight: 300, fontStyle: "italic" }}>We'd Love to Hear From You</h1>
+      <p style={{ fontSize: 16, color: "var(--text-muted)", marginTop: 16, lineHeight: 1.8 }}>Have a question about an order, a product, or just want to say hello? Reach out anytime.</p>
+    </div>
+    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 24, marginBottom: 60 }}>
+      {[["📞","Phone","Give us a call","+91 98765 43210","tel:+919876543210"],["📧","Email","Send us a message","hello@craftednest.com","mailto:hello@craftednest.com"],["🕐","Hours","We're available","Mon–Sat, 10am–6pm",null]].map(([em,title,sub,val,href]) => (
+        <div key={title} className="card" style={{ padding: 28, textAlign: "center" }}>
+          <div style={{ fontSize: 40, marginBottom: 14 }}>{em}</div>
+          <h3 style={{ fontFamily: "var(--font-serif)", fontSize: 20, marginBottom: 6 }}>{title}</h3>
+          <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 10 }}>{sub}</p>
+          {href ? <a href={href} style={{ fontSize: 15, color: "var(--terra)", fontWeight: 500 }}>{val}</a> : <p style={{ fontSize: 15, fontWeight: 500 }}>{val}</p>}
+        </div>
+      ))}
+    </div>
+    <div className="card" style={{ padding: 40 }}>
+      <h2 style={{ fontFamily: "var(--font-serif)", fontSize: 28, marginBottom: 8, fontWeight: 300 }}>Send Us a Message</h2>
+      <p style={{ fontSize: 14, color: "var(--text-muted)", marginBottom: 28 }}>Fill out the form below and we'll get back to you within 24 hours.</p>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
+        <div><label style={{ fontSize: 13, fontWeight: 500, display: "block", marginBottom: 6 }}>Your Name</label><input className="input-field" placeholder="Jane Smith"/></div>
+        <div><label style={{ fontSize: 13, fontWeight: 500, display: "block", marginBottom: 6 }}>Email Address</label><input className="input-field" type="email" placeholder="your@email.com"/></div>
+      </div>
+      <div style={{ marginBottom: 16 }}><label style={{ fontSize: 13, fontWeight: 500, display: "block", marginBottom: 6 }}>Subject</label><input className="input-field" placeholder="Order inquiry, product question..."/></div>
+      <div style={{ marginBottom: 24 }}><label style={{ fontSize: 13, fontWeight: 500, display: "block", marginBottom: 6 }}>Message</label><textarea className="input-field" rows={5} placeholder="Tell us how we can help you..." style={{ resize: "vertical" }}/></div>
+      <div style={{ background: "var(--beige)", borderRadius: 8, padding: 16, marginBottom: 24, fontSize: 14, color: "var(--text-muted)" }}>
+        💡 <strong>Note:</strong> You can also reach us directly at <a href="mailto:hello@craftednest.com" style={{ color: "var(--terra)" }}>hello@craftednest.com</a> or call <a href="tel:+919876543210" style={{ color: "var(--terra)" }}>+91 98765 43210</a> for faster response.
+      </div>
+      <button className="btn-primary" style={{ padding: "12px 32px" }}>Send Message</button>
+    </div>
+  </div>
+);
+
 const AboutPage = () => (
   <div style={{ maxWidth: 820, margin: "0 auto", padding: "60px 20px 80px" }}>
     <div style={{ textAlign: "center", marginBottom: 60 }}>
@@ -1104,7 +1138,7 @@ const Footer = () => {
           </div>
           <div>
             <p style={{ fontWeight: 600, fontSize: 12, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 14, color: "var(--sage-light)" }}>Company</p>
-            {[["About","about"],["Login","login"],["Register","register"]].map(([l,p]) => <button key={l} onClick={() => navigate(p)} style={{ display: "block", background: "none", border: "none", color: "rgba(255,255,255,0.7)", fontSize: 14, marginBottom: 8, textAlign: "left", cursor: "pointer" }}>{l}</button>)}
+            {[["About","about"],["Contact","contact"],["Login","login"],["Register","register"]].map(([l,p]) => <button key={l} onClick={() => navigate(p)} style={{ display: "block", background: "none", border: "none", color: "rgba(255,255,255,0.7)", fontSize: 14, marginBottom: 8, textAlign: "left", cursor: "pointer" }}>{l}</button>)}
           </div>
         </div>
         <div style={{ borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: 24, display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 12, fontSize: 12, opacity: 0.5 }}>
@@ -1119,7 +1153,7 @@ const Footer = () => {
 const Router = () => {
   const { page, authLoading } = useApp();
   if (authLoading) return <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "60vh" }}><div className="spinner"/></div>;
-  const pages = { home: HomePage, product: ProductPage, login: LoginPage, register: RegisterPage, forgot: ForgotPage, checkout: CheckoutPage, orders: OrdersPage, admin: AdminPage, about: AboutPage };
+  const pages = { home: HomePage, product: ProductPage, login: LoginPage, register: RegisterPage, forgot: ForgotPage, checkout: CheckoutPage, orders: OrdersPage, admin: AdminPage, about: AboutPage, contact: ContactPage };
   const Page = pages[page] || HomePage;
   return <Page/>;
 };
