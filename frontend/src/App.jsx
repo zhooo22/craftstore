@@ -128,6 +128,7 @@ const AppProvider = ({ children }) => {
   const logout = () => {
     api.token.clear();
     setUser(null);
+    setCart([]);
     navigate("home");
     showToast("Logged out successfully.", "info");
   };
