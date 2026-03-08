@@ -1,4 +1,4 @@
-// backend/server.js
+﻿// backend/server.js
 // ─────────────────────────────────────────────────────────────────────────────
 // The Crafted Nest — Express + SQLite Backend
 //
@@ -44,6 +44,10 @@ const path = require('path');
 
 // Initialize DB (runs schema on startup)
 require('./db/database');
+// Auto-seed if database is empty
+const db = require('./db/database');
+const userCount = db.prepare('SELECT COUNT(*) as c FROM users').get().c;
+if (userCount === 0) { console.log('Empty database detected, seeding...'); require('./db/seed'); }
 
 const { errorHandler, notFound } = require('./middleware/errorHandler');
 
